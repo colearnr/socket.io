@@ -39,7 +39,7 @@ var Client = irc.Client = function(host, port) {
   this.user = null;
   this.real = null;
 }
-sys.inherits(Client, process.EventEmitter);
+sys.inherits(Client, require('events').EventEmitter);
 
 Client.prototype.connect = function(nick, user, real) {
   var connection = tcp.createConnection(this.port, this.host);
@@ -118,13 +118,13 @@ Client.prototype.onConnect = function() {
 
 Client.prototype.onReceive = function(chunk) {
   this.buffer = this.buffer + chunk;
-  
+
   while (this.buffer) {
     var offset = this.buffer.indexOf("\r\n");
     if (offset < 0) {
       return;
     }
-  
+
     var message = this.buffer.substr(0, offset);
     this.buffer = this.buffer.substr(offset + 2);
     sys.puts('< '+message);
@@ -137,7 +137,7 @@ Client.prototype.onReceive = function(chunk) {
       this.onMessage(message);
     }
   }
-}; 
+};
 
 Client.prototype.onMessage = function(message) {
   switch (message.command) {
